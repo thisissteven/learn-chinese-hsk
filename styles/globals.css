@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    --removed-body-scroll-bar-size: 0px;
+  }
+
+  button {
+    select: none;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    --app-background: #222222;
+    --focus-color: #1a73e8;
+    /* Don't animate the shadow, if present */
+    outline: none;
+    transition: none;
+    box-shadow: 0 0 0 2px var(--app-background), 0 0 0 4px var(--focus-color);
+  }
+
+  html {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+
+  .bezier-quart {
+    transition-timing-function: cubic-bezier(0.77, 0, 0.18, 1);
+  }
+}
+
+@layer utilities {
+  .h-screen {
+    height: 100dvh;
+  }
+
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+
+  .max-h-dialog {
+    max-height: calc(100vh + 0.5rem);
+    max-height: calc(100dvh + 0.5rem);
+  }
+}
+
+/* #region /**=========== Dialog =========== */
+
+/* Dialog Overlay */
+[data-dialog-overlay] {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (min-width: 448px) {
+  [data-dialog-overlay] {
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+/* Dialog Content */
+
+[data-dialog-content] {
+  transition-property: opacity, transform, scale;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-dialog-state="initial"] {
+  opacity: var(--opacity-from, 0);
+  transform: translate(var(--x-from, -50%), var(--y-from)) scale(var(--scale-from, 1));
+}
+
+[data-dialog-state="animate"] {
+  opacity: var(--opacity-to, 1);
+  transform: translate(var(--x-from, -50%), var(--y-to)) scale(var(--scale-to, 1));
+  transition-duration: 0.3s;
+}
+
+[data-dialog-state="exit"] {
+  opacity: var(--opacity-from, 0);
+  transform: translate(var(--x-from, -50%), var(--y-from)) scale(var(--scale-from, 1));
+  transition-duration: 0.5s;
+}
+
+@media (min-width: 448px) {
+  [data-dialog-content] {
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  [data-dialog-state="animate"] {
+    transition-duration: 0.3s;
+  }
+
+  [data-dialog-state="exit"] {
+    transition-duration: 0.2s;
+  }
+}
+
+/* #endregion /**=========== Dialog =========== */
+
+/* #region  /**=========== Scrollbar =========== */
+
+@media screen and (min-width: 768px) {
+  ::-webkit-scrollbar,
+  .scrollbar ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track,
+  .scrollbar ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  }
+  ::-webkit-scrollbar-thumb,
+  .scrollbar ::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    opacity: 0.5;
+  }
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active,
+  .scrollbar ::-webkit-scrollbar-thumb:hover,
+  .scrollbar ::-webkit-scrollbar-thumb:active {
+    background: #a7a7a7;
+  }
+}
+
+/* Firefox */
+html,
+.scrollbar {
+  scrollbar-width: thin;
+}
+
+/* Hide Scrollbar */
+.scrollbar-none::-webkit-scrollbar {
+  /* WebKit: Chrome, Safari */
+  display: none;
+}
+
+.scrollbar-none {
+  /* IE 10+ */
+  -ms-overflow-style: none;
+  /* Firefox */
+  scrollbar-width: none;
+}
+/* #endregion  /**======== Scrollbar =========== */
