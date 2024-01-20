@@ -1,11 +1,18 @@
-import type { InferGetStaticPropsType, GetStaticPaths, GetStaticPropsContext } from "next";
+import type {
+  InferGetStaticPropsType,
+  GetStaticPaths,
+  GetStaticPropsContext,
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+  GetServerSideProps,
+} from "next";
 import { promises as fs } from "fs";
 import { CHARACTERS_PER_PAGE, ChineseCharacter, HSK_LEVELS, Level } from "@/data";
 import Pagination from "@/components/Pagination";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import Head from "next/head";
-import { useCompletedCharacters, useCompletedCharactersActions, useShowUncompletedOnly } from "@/store";
+import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
 import { CharacterCard } from "@/components/CharacterCard";
 import { useLastPageActions } from "@/store/useLastPage";
 import { MobileSidebar } from "@/modules/Layout/Sidebar";
@@ -16,20 +23,11 @@ async function getCharactersOnLevel(level: string | number) {
   return characters;
 }
 
-export const getStaticPaths = (async () => {
-  return {
-    paths: HSK_LEVELS.map((level) => ({
-      params: {
-        level: level.toString(),
-      },
-    })),
-    fallback: false,
-  };
-}) satisfies GetStaticPaths;
-
 const getFilePath = (level: string | number) => `/data/hsk-level-${level}.json`;
 
-export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
+export const getServerSideProps = async ({ params, res }: GetServerSidePropsContext) => {
+  res.setHeader("Cache-Control", "public, s-maxage=86400, must-revalidate");
+
   const level = params?.level as string;
 
   const allCharacters = await getCharactersOnLevel(level);
@@ -58,7 +56,7 @@ function usePagination({
   previousLevelTotalPages,
   hasPreviousLevel,
   hasNextLevel,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const searchParams = useSearchParams();
 
   const currentPage = searchParams.get("page") ?? "1";
@@ -70,24 +68,6 @@ function usePagination({
       updateLastPage(currentLevel, currentPage);
     }
   }, [currentLevel, currentPage, updateLastPage]);
-
-  //   const showUncompeletedOnly = useShowUncompletedOnly();
-  //   const completedCharacters = useCompletedCharacters();
-
-  //   const filteredCharacters = showUncompeletedOnly
-  //     ? Array.from(allCharacters).sort((a, b) => {
-  //         const aCompleted = completedCharacters[currentLevel].includes(a.id);
-  //         const bCompleted = completedCharacters[currentLevel].includes(b.id);
-
-  //         if (!aCompleted && bCompleted) {
-  //           return -1;
-  //         } else if (aCompleted && !bCompleted) {
-  //           return 1;
-  //         } else {
-  //           return allCharacters.indexOf(a) - allCharacters.indexOf(b);
-  //         }
-  //       })
-  //     : allCharacters;
 
   const characters = React.useMemo(() => {
     return allCharacters.slice(
@@ -115,7 +95,7 @@ function usePagination({
   };
 }
 
-export default function Page(props: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Page(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [flippedCard, setFlippedCard] = React.useState<number | null>(null);
 
   const ref = React.useRef<HTMLDivElement>(null);
@@ -181,7 +161,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
             })}
           </div>
         </div>
-        <div className="absolute w-full sm:right-4 px-2 bottom-2 flex justify-end mt-8 gap-2">
+        <div className="fixed md:absolute w-full sm:right-4 px-2 bottom-2 flex justify-end mt-8 gap-2">
           <MobileSidebar />
 
           <Pagination

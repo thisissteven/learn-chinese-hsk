@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/hsk/1",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
