@@ -1,8 +1,6 @@
 import type { NextRequest } from "next/server";
 import CC_CEDICT from "@/data/cedict_1_0_ts_utf-8_mdbg.json";
 
-export const runtime = "edge";
-
 const KEYS = {
   SIMPLIFIED: 0,
   TRADITIONAL: 1,
