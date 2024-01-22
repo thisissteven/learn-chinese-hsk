@@ -7,7 +7,7 @@ import { LoadingBar } from "@/components/Loader";
 import IdHanziMap from "@/data/id-hanzi-map.json";
 import { LinkButton } from "@/components/LinkButton";
 import { MarkAsCompleted, preloadHanziDetails } from "@/components/CharacterCard";
-import { BASE_URL } from "@/pages/_app";
+import { BASE_URL, useAudio } from "@/pages/_app";
 import { HanziApiResponse } from "./types";
 import { HanziDetails } from "./HanziDetails";
 import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
@@ -27,13 +27,16 @@ export function HanziModal() {
 
   const dialogState = useDialogState();
 
+  const { stopAudio } = useAudio();
+
   React.useEffect(() => {
     if (hanzi) {
       dialogState.onOpenChange(true);
     } else {
       dialogState.onOpenChange(false);
+      stopAudio();
     }
-  }, [dialogState, hanzi]);
+  }, [dialogState, hanzi, stopAudio]);
 
   const { data, isLoading } = useSWRImmutable<HanziApiResponse>(
     hanzi ? `hanzi/${hanzi}` : null,

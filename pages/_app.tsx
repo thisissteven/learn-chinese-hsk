@@ -27,9 +27,46 @@ export default function App({ Component, pageProps }: AppProps) {
           --font-chinese: ${notoSans.style.fontFamily};
         }
       `}</style>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <AudioProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </AudioProvider>
     </SWRConfig>
+  );
+}
+
+type AudioContextValues = {
+  playAudio: (url: string, onEnded?: () => void) => void;
+  stopAudio: () => void;
+};
+
+const AudioContext = React.createContext({} as AudioContextValues);
+
+export function useAudio() {
+  return React.useContext(AudioContext);
+}
+
+function AudioProvider({ children }: { children: React.ReactNode }) {
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  return (
+    <AudioContext.Provider
+      value={{
+        playAudio: (url, onEnded) => {
+          audioRef.current = new Audio(url);
+          audioRef.current.play();
+
+          if (onEnded) {
+            audioRef.current.addEventListener("ended", onEnded);
+          }
+        },
+        stopAudio: () => {
+          audioRef.current?.pause();
+        },
+      }}
+    >
+      {children}
+    </AudioContext.Provider>
   );
 }

@@ -1,3 +1,4 @@
+import { useAudio } from "@/pages/_app";
 import clsx from "clsx";
 import * as React from "react";
 import useSWRImmutable from "swr/immutable";
@@ -6,19 +7,21 @@ export function AudioButton({ url, size = "normal" }: { url: string; size?: "sma
   const { data, mutate } = useSWRImmutable<string | undefined>(url, () => undefined);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const audio = React.useRef(new Audio());
+  const { playAudio, stopAudio } = useAudio();
 
   return (
     <button
       onClick={async () => {
         if (isLoading) {
-          audio.current.pause();
+          stopAudio();
           setIsLoading(false);
           return;
         }
         setIsLoading(true);
         if (data) {
-          audio.current = new Audio(data);
+          playAudio(data, () => {
+            setIsLoading(false);
+          });
         } else {
           const response = await fetch(url);
           const blob = await response.blob();
@@ -29,19 +32,15 @@ export function AudioButton({ url, size = "normal" }: { url: string; size?: "sma
             revalidate: false,
           });
 
-          audio.current = new Audio(objectURL);
+          playAudio(objectURL, () => {
+            setIsLoading(false);
+          });
         }
-
-        audio.current.addEventListener("ended", () => {
-          setIsLoading(false);
-        });
-
-        audio.current.play();
       }}
       className={clsx(
-        "text-sky-500 opacity-50 active:opacity-100 transition",
+        "text-sky-500 active:opacity-100 transition",
         size === "small" && "inline align-middle ml-1",
-        isLoading && "opacity-100"
+        isLoading ? "opacity-100" : "opacity-50"
       )}
     >
       <svg

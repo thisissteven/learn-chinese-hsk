@@ -9,7 +9,7 @@ Duolingo style web app you can use to learn chinese characters.
 - [ ] Flashcards
 - [ ] Construct sentences
 - [ ] Matching pairs
-- [ ] Dictionary
-- [ ] Pinyin pronunciation
+- [x] Dictionary
+- [x] Pinyin pronunciation
 - [x] Save progress locally
-- [ ] Example readings
+- [x] Example readings
