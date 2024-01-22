@@ -133,8 +133,8 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
         <title>{title}</title>
       </Head>
       <HanziModal />
-      <div className="relative w-full">
-        <div ref={ref} className="w-full h-dvh overflow-y-auto scrollbar">
+      <div className="relative h-dvh w-full">
+        <div ref={ref} className="w-full h-full overflow-y-auto scrollbar">
           <div className="px-4 sm:pr-8 py-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
             {characters.map((character) => {
               const isCompleted = currentCompletedCharacters.includes(character.id);

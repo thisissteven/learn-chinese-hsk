@@ -5,43 +5,13 @@ import useSWRImmutable from "swr/immutable";
 import * as React from "react";
 import { LoadingBar } from "@/components/Loader";
 import IdHanziMap from "@/data/id-hanzi-map.json";
-import { Button } from "@/components/Button";
 import { LinkButton } from "@/components/LinkButton";
 import { preloadHanziDetails } from "@/components/CharacterCard";
+import { BASE_URL } from "@/pages/_app";
+import { HanziApiResponse } from "./types";
+import { HanziDetails } from "./HanziDetails";
 
-type HanziApiResponse = {
-  definition: Array<{
-    simplified: string;
-    pinyin: string;
-    definition: string;
-  }>;
-
-  audioUrl: string;
-
-  related: Array<{
-    simplified: string;
-    pinyin: string;
-    definition: string;
-  }>;
-
-  idioms: Array<{
-    simplified: string;
-    pinyin: string;
-    definition: string;
-  }>;
-
-  lessons: Array<{
-    simplified: string;
-    pinyin: string;
-    english: string;
-    audioUrl: string;
-    lessonInfo: {
-      level: string;
-    };
-  }>;
-};
-
-type IdHanziMapKey = keyof typeof IdHanziMap;
+export type IdHanziMapKey = keyof typeof IdHanziMap;
 
 export function HanziModal() {
   const router = useRouter();
@@ -64,7 +34,17 @@ export function HanziModal() {
     }
   }, [dialogState, hanzi]);
 
-  const { data, isLoading } = useSWRImmutable<HanziApiResponse>(hanzi ? `hanzi/${hanzi}` : null);
+  const { data, isLoading } = useSWRImmutable<HanziApiResponse>(
+    hanzi ? `hanzi/${hanzi}` : null,
+    async (url) => {
+      const response = await fetch(`${BASE_URL}/api/${url}`);
+      const data = await response.json();
+      return data;
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
 
   return (
     <SharedDialog
@@ -75,20 +55,26 @@ export function HanziModal() {
         },
       }}
     >
-      <SharedDialog.Content className="p-4 h-[calc(100dvh-2rem)] border-t-2 md:border-2 border-orange-200/30 shadow-b-small shadow-orange-200/30 bg-black">
+      <SharedDialog.Content className="h-full px-4 pt-4 flex flex-col pb-[72px]">
         <SharedDialog.MobilePan />
         {isLoading && (
-          <div className="grid place-items-center w-full h-full">{<LoadingBar className="scale-150" visible />}</div>
+          <div className="grid place-items-center absolute inset-0 z-50 bg-black/50 mb-8">
+            {<LoadingBar className="scale-150" visible />}
+          </div>
         )}
+
         {data && <HanziDetails {...data} />}
 
-        <div className="absolute  flex gap-2 bottom-0 left-0 right-0 p-3 md:p-4">
+        <div className="absolute top-8 md:top-4 left-0 right-0 mx-4 bg-gradient-to-b from-black h-6"></div>
+        <div className="absolute bottom-14 md:bottom-12 left-0 right-0 mx-4 bg-gradient-to-t from-black h-12"></div>
+
+        <div className="absolute flex gap-2 bottom-0 left-0 right-0 px-3 pb-3 md:px-4 md:pb-4">
           <LinkButton
             onMouseEnter={() => {
               if (previousHanzi) preloadHanziDetails(previousHanzi);
             }}
             disabled={!previousHanzi}
-            className="flex-1 shadow-orange-200/50 border-orange-200/50 text-orange-200/90"
+            className="flex-1 shadow-none border-zinc text-white aria-disabled:shadow-none aria-disabled:border-zinc aria-disabled:text-white"
             href={`/hsk/${router.query.level}?hanzi=${previousHanzi}&page=${router.query.page}`}
             shallow
           >
@@ -99,7 +85,7 @@ export function HanziModal() {
               if (nextHanzi) preloadHanziDetails(nextHanzi);
             }}
             disabled={!nextHanzi}
-            className="flex-1 shadow-orange-200/50 border-orange-200/50 text-orange-200/90"
+            className="flex-1 shadow-none border-zinc text-white aria-disabled:shadow-none aria-disabled:border-zinc aria-disabled:text-white"
             href={`/hsk/${router.query.level}?hanzi=${nextHanzi}&page=${router.query.page}`}
             shallow
           >
@@ -108,15 +94,5 @@ export function HanziModal() {
         </div>
       </SharedDialog.Content>
     </SharedDialog>
-  );
-}
-
-function HanziDetails({ definition }: HanziApiResponse) {
-  return (
-    <div>
-      <p className="text-3xl">{definition[0].simplified}</p>
-      <p className="font-medium">{definition[0].pinyin}</p>
-      <p className="">{definition[0].definition}</p>
-    </div>
   );
 }

@@ -1,6 +1,34 @@
 import type { NextRequest } from "next/server";
+import CC_CEDICT from "@/data/cedict_1_0_ts_utf-8_mdbg.json";
 
 export const runtime = "edge";
+
+const KEYS = {
+  SIMPLIFIED: 0,
+  TRADITIONAL: 1,
+  PINYIN: 2,
+  ENTRIES: 3,
+  DEFINITIONS: 4,
+  RANK: 5,
+  HSK: 6,
+};
+
+function lookup(hanzi: string) {
+  const entry = CC_CEDICT[hanzi as keyof typeof CC_CEDICT] as any;
+  if (!entry) return null;
+  return {
+    simplified: entry[KEYS.SIMPLIFIED],
+    rank: entry[KEYS.RANK],
+    hsk: entry[KEYS.HSK],
+    entries: entry[KEYS.ENTRIES].map((en: any) => {
+      return {
+        traditional: en[KEYS.TRADITIONAL],
+        pinyin: en[KEYS.PINYIN],
+        definitions: en[KEYS.DEFINITIONS],
+      };
+    }),
+  };
+}
 
 export default async function handler(req: NextRequest) {
   const url = new URL(req.url);
@@ -10,8 +38,7 @@ export default async function handler(req: NextRequest) {
   const data = await response.json();
 
   const details = {
-    definition: data.definition,
-    audioUrl: data.audioUrl,
+    definition: lookup(hanzi),
     related: data.related,
     idioms: data.idioms,
     lessons: data.lessons,

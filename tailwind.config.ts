@@ -23,6 +23,7 @@ const config: Config = {
         black: "#242424",
         softblack: "#282828",
         zinc: "#303030",
+        softzinc: "#424242",
         wheat: "#bcb98a",
         mossgreen: "#899a5c",
         empty: "#505050",

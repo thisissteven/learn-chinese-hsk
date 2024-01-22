@@ -76,19 +76,19 @@ function SharedDialogContent({ children, className, overlayClassName, canEscape 
         data-dialog-state="initial"
         className={cn(
           "fixed z-30 md:top-1/2 left-1/2 shadow-md focus:outline-none",
-          "max-h-dialog overflow-y-auto scrollbar bg-black text-white",
+          "overflow-y-auto scrollbar bg-black text-white",
 
           // default
-          "w-full rounded-md",
+          "w-full rounded-md max-h-[80dvh]",
 
           // desktop styles override
           "md:w-[calc(100%-2rem)] md:max-w-[540px]",
-          "md:[--scale-from:1] md:[--scale-to:1]",
-          "md:[--y-from:-50%] md:[--y-to:-50%]",
+          "md:[--scale-from:0.96] md:[--scale-to:1]",
+          "md:[--y-from:-48%] md:[--y-to:-50%]",
 
           // mobile styles override
           "max-md:[--y-from:100%] max-md:[--y-to:0%]",
-          "max-md:bottom-0 max-md:max-h-[80dvh] max-md:rounded-t-lg max-md:rounded-b-none",
+          "max-md:bottom-0 max-md:rounded-t-lg max-md:rounded-b-none",
           className
         )}
       >
@@ -105,5 +105,5 @@ SharedDialog.Trigger = RadixDialog.Trigger;
 SharedDialog.Close = RadixDialog.Close;
 
 SharedDialog.MobilePan = function MobilePan() {
-  return <div className="md:hidden mx-auto rounded-full h-1 w-8 bg-zinc mb-3"></div>;
+  return <div className="md:hidden mx-auto rounded-full h-1 w-8 bg-softzinc mb-3"></div>;
 };
