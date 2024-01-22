@@ -1,17 +1,35 @@
 import { ChineseCharacter } from "@/data";
+import { BASE_URL } from "@/pages/_app";
 import clsx from "clsx";
+import Link from "next/link";
 import React from "react";
+import { preload } from "swr";
+
+export async function preloadHanziDetails(hanzi: string) {
+  await preload(`hanzi/${hanzi}`, async (url) => {
+    const response = await fetch(`${BASE_URL}/api/${url}`);
+    const data = await response.json();
+    return data;
+  });
+}
 
 export function CharacterCard({
-  isFlipped,
-  onFlip,
-  isCompleted,
-  onCompleteToggle,
   id,
   hanzi,
   pinyin,
   translations,
-}: ChineseCharacter & { isCompleted: boolean; onCompleteToggle: () => void; onFlip: () => void; isFlipped: boolean }) {
+  isFlipped,
+  isCompleted,
+  hanziHref,
+  onFlip,
+  onCompleteToggle,
+}: ChineseCharacter & {
+  hanziHref: string;
+  isCompleted: boolean;
+  onCompleteToggle: () => void;
+  onFlip: () => void;
+  isFlipped: boolean;
+}) {
   return (
     <>
       <style jsx>{`
@@ -37,11 +55,32 @@ export function CharacterCard({
         <div className={clsx("relative w-full h-full card", isFlipped && "card-flipped")}>
           <div
             className={clsx(
-              "card-content has-[:active]:scale-[98%] transition absolute inset-0 border-2 shadow-b-small rounded-lg grid place-items-center bg-softblack",
+              "card-content has-[input:active]:scale-[98%] transition absolute inset-0 border-2 shadow-b-small rounded-lg grid place-items-center bg-softblack",
               isCompleted ? "border-mossgreen shadow-mossgreen text-wheat" : "border-border shadow-border"
             )}
           >
-            {hanzi}
+            <div className="relative">
+              {hanzi}
+
+              <div
+                className={clsx(
+                  "absolute top-6 left-1/2 -translate-x-1/2 transition",
+                  isCompleted ? "opacity-100" : "opacity-0"
+                )}
+              >
+                {isCompleted && (
+                  <Link
+                    onMouseEnter={() => preloadHanziDetails(hanzi)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="whitespace-nowrap text-sm hover:underline underline-offset-[3px]"
+                    href={hanziHref}
+                    shallow
+                  >
+                    view details
+                  </Link>
+                )}
+              </div>
+            </div>
 
             <MarkAsCompleted isCompleted={isCompleted} onClick={onCompleteToggle} />
 

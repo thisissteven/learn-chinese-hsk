@@ -1,54 +1,33 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import React from "react";
 
-import { useDialogState } from "./hook";
 import { cn } from "@/utils/cn";
+import { DialogStateReturnType } from "./hook";
 
 type DialogContextProps = {
-  canEscape: boolean;
   overlayRef: React.RefObject<HTMLDivElement>;
   contentRef: React.RefObject<HTMLDivElement>;
   closeDialog: () => void;
-  needAuth?: boolean;
 };
 
 const DialogContext = React.createContext({} as DialogContextProps);
 
-export function useDialog() {
+function useSharedDialog() {
   return React.useContext(DialogContext);
 }
 
 type DialogProps = {
   children: React.ReactNode;
-  canEscape?: boolean;
-  triggerKey?: string;
-  needAuth?: boolean;
+  dialogState: DialogStateReturnType;
 };
 
-export function Dialog({ children, canEscape = true, triggerKey, needAuth }: DialogProps) {
-  const { open, onOpenChange, overlayRef, contentRef } = useDialogState();
-
-  // Toggle the menu when ⌘[trigger_key] is pressed
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === triggerKey && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        onOpenChange(!open);
-      }
-    };
-
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [triggerKey, onOpenChange, open]);
-
+export function SharedDialog({ children, dialogState: { open, onOpenChange, overlayRef, contentRef } }: DialogProps) {
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <DialogContext.Provider
         value={{
-          canEscape,
           overlayRef,
           contentRef,
-          needAuth,
           closeDialog: () => onOpenChange(false),
         }}
       >
@@ -62,10 +41,11 @@ type DialogContentProps = {
   children: React.ReactNode;
   className?: string;
   overlayClassName?: string;
+  canEscape?: boolean;
 };
 
-function DialogContent({ children, className, overlayClassName }: DialogContentProps) {
-  const { overlayRef, contentRef } = useDialog();
+function SharedDialogContent({ children, className, overlayClassName, canEscape = true }: DialogContentProps) {
+  const { overlayRef, closeDialog, contentRef } = useSharedDialog();
 
   return (
     <RadixDialog.Portal>
@@ -73,14 +53,29 @@ function DialogContent({ children, className, overlayClassName }: DialogContentP
         ref={overlayRef}
         data-dialog-overlay
         data-dialog-state="initial"
-        className={cn("fixed inset-0 z-30 w-full h-full bg-black/60 brightness-0", overlayClassName)}
+        className={cn("fixed inset-0 z-30 w-full h-full bg-black/50 brightness-0", overlayClassName)}
       />
       <RadixDialog.Content
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          if (canEscape) closeDialog();
+        }}
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+          if (canEscape) closeDialog();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+          if (canEscape) closeDialog();
+        }}
         ref={contentRef}
         data-dialog-content
         data-dialog-state="initial"
         className={cn(
-          "fixed z-30 md:top-1/2 left-1/2 shadow-md",
+          "fixed z-30 md:top-1/2 left-1/2 shadow-md focus:outline-none",
           "max-h-dialog overflow-y-auto scrollbar bg-black text-white",
 
           // default
@@ -103,14 +98,12 @@ function DialogContent({ children, className, overlayClassName }: DialogContentP
   );
 }
 
-Dialog.Content = DialogContent;
+SharedDialog.Content = SharedDialogContent;
 
-Dialog.Trigger = RadixDialog.Trigger;
+SharedDialog.Trigger = RadixDialog.Trigger;
 
-Dialog.Close = RadixDialog.Close;
+SharedDialog.Close = RadixDialog.Close;
 
-Dialog.MobilePan = function MobilePan() {
+SharedDialog.MobilePan = function MobilePan() {
   return <div className="md:hidden mx-auto rounded-full h-1 w-8 bg-zinc mb-3"></div>;
 };
-
-export * from "./SharedDialog";

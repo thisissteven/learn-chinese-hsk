@@ -2,13 +2,14 @@ import type { InferGetStaticPropsType, GetStaticPaths, GetStaticPropsContext } f
 import { promises as fs } from "fs";
 import { CHARACTERS_PER_PAGE, ChineseCharacter, HSK_LEVELS, Level } from "@/data";
 import Pagination from "@/components/Pagination";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import Head from "next/head";
-import { useCompletedCharacters, useCompletedCharactersActions, useShowUncompletedOnly } from "@/store";
+import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
 import { CharacterCard } from "@/components/CharacterCard";
-import { useLastPageActions } from "@/store/useLastPage";
+import { useLastLevelActions } from "@/store/useLastLevel";
 import { MobileSidebar } from "@/modules/Layout/Sidebar";
+import { HanziModal } from "@/modules/Character";
 
 async function getCharactersOnLevel(level: string | number) {
   const file = await fs.readFile(process.cwd() + getFilePath(level), "utf8");
@@ -63,32 +64,6 @@ function usePagination({
 
   const currentPage = searchParams.get("page") ?? "1";
 
-  const { updateLastPage } = useLastPageActions();
-
-  React.useEffect(() => {
-    if (currentPage) {
-      updateLastPage(currentLevel, currentPage);
-    }
-  }, [currentLevel, currentPage, updateLastPage]);
-
-  //   const showUncompeletedOnly = useShowUncompletedOnly();
-  //   const completedCharacters = useCompletedCharacters();
-
-  //   const filteredCharacters = showUncompeletedOnly
-  //     ? Array.from(allCharacters).sort((a, b) => {
-  //         const aCompleted = completedCharacters[currentLevel].includes(a.id);
-  //         const bCompleted = completedCharacters[currentLevel].includes(b.id);
-
-  //         if (!aCompleted && bCompleted) {
-  //           return -1;
-  //         } else if (aCompleted && !bCompleted) {
-  //           return 1;
-  //         } else {
-  //           return allCharacters.indexOf(a) - allCharacters.indexOf(b);
-  //         }
-  //       })
-  //     : allCharacters;
-
   const characters = React.useMemo(() => {
     return allCharacters.slice(
       (parseInt(currentPage) - 1) * CHARACTERS_PER_PAGE,
@@ -129,9 +104,15 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
         behavior: "smooth",
       });
     }
-  }, [characters]);
+  }, [currentPage]);
 
   const title = `HSK ${props.currentLevel} Page ${currentPage}`;
+
+  const { updateLastLevel } = useLastLevelActions();
+
+  React.useEffect(() => {
+    updateLastLevel(props.currentLevel);
+  }, [props.currentLevel, updateLastLevel]);
 
   const { addCompletedCharacters, removeCompletedCharacters, hydrateSettings, hydrateCompletedCharacters } =
     useCompletedCharactersActions();
@@ -151,6 +132,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
       <Head>
         <title>{title}</title>
       </Head>
+      <HanziModal />
       <div className="relative w-full">
         <div ref={ref} className="w-full h-dvh overflow-y-auto scrollbar">
           <div className="px-4 sm:pr-8 py-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
@@ -158,6 +140,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
               const isCompleted = currentCompletedCharacters.includes(character.id);
               return (
                 <CharacterCard
+                  hanziHref={`/hsk/${props.currentLevel}/?hanzi=${character.hanzi}&page=${currentPage}`}
                   isFlipped={flippedCard === character.id}
                   isCompleted={currentCompletedCharacters.includes(character.id)}
                   onCompleteToggle={() => {
