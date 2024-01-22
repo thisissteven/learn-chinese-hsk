@@ -11,17 +11,17 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
 
   React.useEffect(() => {
     if (lessons.length > 0) {
-      setCurrentLevel(lessons[0].lessonInfo.level);
+      setCurrentLevel(lessons[0].lessonInfo.level.toLowerCase());
     }
   }, [lessons]);
 
   const currentEntry = definition.entries[entryIndex];
   const entryLength = definition.entries.length;
 
-  const lessonLevelSet = new Set(lessons.map((lesson) => lesson.lessonInfo.level));
+  const lessonLevelSet = new Set(lessons.map((lesson) => lesson.lessonInfo.level.toLowerCase()));
   const lessonLevels = Array.from(lessonLevelSet);
 
-  const currentLesson = lessons.filter((lesson) => lesson.lessonInfo.level === currentLevel);
+  const currentLesson = lessons.filter((lesson) => lesson.lessonInfo.level.toLowerCase() === currentLevel);
 
   const hanzi = definition.simplified;
   const pinyin = currentEntry.pinyin;
@@ -44,7 +44,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
                 <button
                   onClick={() => setEntryIndex(index)}
                   className={clsx(
-                    "rounded-full px-4 text-sm py-0.5 border",
+                    "rounded-md px-4 text-sm py-0.5 border",
                     entryIndex === index ? "bg-white text-black border-white" : "border-softzinc"
                   )}
                   key={index}
@@ -55,15 +55,8 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
             })}
           </div>
         )}
-        <ul className="relative pl-4">
-          {currentEntry.definitions.map((definition, index) => {
-            return (
-              <li key={index} className="list-disc">
-                {definition}
-              </li>
-            );
-          })}
-        </ul>
+
+        <HanziDefinition entry={currentEntry} />
 
         {lessonLevels.length > 1 && (
           <div className="flex flex-wrap gap-2">
@@ -72,7 +65,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
                 <button
                   onClick={() => setCurrentLevel(level)}
                   className={clsx(
-                    "rounded-full px-4 text-sm py-0.5 border",
+                    "rounded-md px-4 text-sm py-0.5 border",
                     currentLevel === level ? "bg-white text-black border-white" : "border-softzinc"
                   )}
                   key={index}
@@ -83,21 +76,35 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
             })}
           </div>
         )}
-        <ul className="relative pl-4">
+        <ul className="relative space-y-2">
           {currentLesson.map((lesson, index) => {
             return (
-              <li key={index} className="list-disc">
-                <div className="flex">
-                  <p>{lesson.simplified}</p>
+              <li key={index} className="list-none">
+                <div>
+                  {lesson.simplified}
                   <AudioButton size="small" key={lesson.audioUrl} url={lesson.audioUrl} />
                 </div>
-                <p>{lesson.pinyin}</p>
-                <p>{lesson.english}</p>
+                {/* <p className="text-sm text-gray">{lesson.pinyin}</p> */}
+                <p className="text-sm text-gray">{lesson.english}</p>
               </li>
             );
           })}
         </ul>
       </div>
     </div>
+  );
+}
+
+function HanziDefinition({ entry }: { entry: HanziApiResponse["definition"]["entries"][number] }) {
+  return (
+    <ul className="relative pl-4">
+      {entry.definitions.map((definition, index) => {
+        return (
+          <li key={index} className="list-disc">
+            {definition}
+          </li>
+        );
+      })}
+    </ul>
   );
 }

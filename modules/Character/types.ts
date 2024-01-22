@@ -1,5 +1,8 @@
+import { Level } from "@/data";
+
 export type HanziApiResponse = {
   definition: {
+    hsk: Level;
     simplified: string;
     entries: Array<{
       pinyin: string;

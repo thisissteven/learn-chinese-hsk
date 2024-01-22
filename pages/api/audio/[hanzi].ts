@@ -20,7 +20,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let mp3Url = null;
 
     liElements.each((_, li) => {
-      const currentHanzi = $(li).find("span.word > a:not(.trad a)").text();
+      const hanziElements = $(li).find("span.word > a:not(.trad a)");
+      const currentHanzi = hanziElements
+        .map((_, elem) => $(elem).text())
+        .get()
+        .join("");
+
       const currentPinyin = $(li).find("div.definition > span.pinyin").text();
 
       if (currentHanzi === hanzi && currentPinyin === pinyin) {

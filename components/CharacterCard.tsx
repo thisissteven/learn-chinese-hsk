@@ -1,5 +1,6 @@
 import { ChineseCharacter } from "@/data";
 import { BASE_URL } from "@/pages/_app";
+import { cn } from "@/utils/cn";
 import clsx from "clsx";
 import Link from "next/link";
 import React from "react";
@@ -110,13 +111,24 @@ export function CharacterCard({
   );
 }
 
-function MarkAsCompleted({ isCompleted, onClick }: { isCompleted: boolean; onClick: () => void }) {
+export function MarkAsCompleted({
+  className,
+  checkmarkClassName,
+  isCompleted,
+  onClick,
+}: {
+  className?: string;
+  checkmarkClassName?: string;
+  isCompleted: boolean;
+  onClick: () => void;
+}) {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={clsx(
+      className={cn(
         "absolute right-4 bottom-4 w-8 h-8 grid place-items-center transition active:scale-95 hover:opacity-100 rounded-md text-sm",
-        !isCompleted && "active:bg-mossgreen/10"
+        !isCompleted && "active:bg-mossgreen/10",
+        className
       )}
     >
       <input
@@ -125,15 +137,18 @@ function MarkAsCompleted({ isCompleted, onClick }: { isCompleted: boolean; onCli
         type="checkbox"
         className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer"
       />
-      <Checkmark />
+      <Checkmark className={checkmarkClassName} />
     </div>
   );
 }
 
-export function Checkmark() {
+export function Checkmark({ className }: { className?: string }) {
   return (
     <svg
-      className="h-6 w-6 text-white/20 peer-active:text-mossgreen/50 peer-checked:text-mossgreen transition pointer-events-none"
+      className={cn(
+        "h-6 w-6 text-white/20 peer-active:text-mossgreen/50 peer-checked:text-mossgreen transition pointer-events-none",
+        className
+      )}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

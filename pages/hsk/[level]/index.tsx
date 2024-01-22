@@ -164,7 +164,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
             })}
           </div>
         </div>
-        <div className="absolute w-full sm:right-4 px-2 bottom-2 flex justify-end mt-8 gap-2">
+        <div className="fixed w-full left-0 max-w-[1440px] mx-auto px-2 md:right-4 md:px-4 bottom-2 flex justify-end mt-8 gap-2">
           <MobileSidebar />
 
           <Pagination
