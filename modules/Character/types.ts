@@ -29,5 +29,3 @@ export type HanziApiResponse = {
     };
   }>;
 };
-
-export type IdHanziMapKey = keyof typeof IdHanziMap;
