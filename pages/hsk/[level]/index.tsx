@@ -87,6 +87,7 @@ function usePagination({
     canPreviousLevel,
     previousHref,
     nextHref,
+    currentLevel,
   };
 }
 
@@ -95,7 +96,8 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
 
   const ref = React.useRef<HTMLDivElement>(null);
 
-  const { characters, currentPage, canNextLevel, canPreviousLevel, previousHref, nextHref } = usePagination(props);
+  const { characters, currentPage, canNextLevel, currentLevel, canPreviousLevel, previousHref, nextHref } =
+    usePagination(props);
 
   React.useEffect(() => {
     if (ref.current) {
@@ -104,7 +106,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
         behavior: "smooth",
       });
     }
-  }, [currentPage]);
+  }, [currentPage, currentLevel]);
 
   const title = `HSK ${props.currentLevel} Page ${currentPage}`;
 

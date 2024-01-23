@@ -1,5 +1,5 @@
 export const HSK_LEVELS = [1, 2, 3, 4, 5, 6] as const;
-export const CHARACTERS_PER_PAGE = 50;
+export const CHARACTERS_PER_PAGE = 10;
 export const CHARACTERS_PER_LEVEL = {
   1: 150,
   2: 150,
