@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
-    "@tanstack/react-virtual": "^3.0.2",
     "axios": "^1.6.5",
     "cheerio": "1.0.0-rc.12",
     "clsx": "^2.1.0",
@@ -23,6 +22,7 @@
     "request": "^2.88.2",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.2.0",
+    "vaul": "^0.8.9",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

@@ -4,10 +4,8 @@ import { BASE_URL } from "@/pages/_app";
 import { AudioButton } from "../AudioButton";
 import clsx from "clsx";
 
-export const HanziDetails = React.memo(_HanziDetails);
-
-function _HanziDetails({ definition, lessons }: HanziApiResponse) {
-  const [currentTab, setCurrentTab] = React.useState<"definition" | "related" | "idioms" | "lessons">("definition");
+export function HanziDetails({ definition, lessons }: HanziApiResponse) {
+  // const [currentTab, setCurrentTab] = React.useState<"definition" | "related" | "idioms" | "lessons">("definition");
   const [entryIndex, setEntryIndex] = React.useState(0);
   const [currentLevel, setCurrentLevel] = React.useState<string | null>(null);
 
@@ -64,7 +62,7 @@ function _HanziDetails({ definition, lessons }: HanziApiResponse) {
 
         {lessonLevels.length > 1 && (
           <div className="flex flex-wrap gap-2">
-            {lessonLevels.map((level, index) => {
+            {lessonLevels.map((level) => {
               return (
                 <button
                   onClick={() => setCurrentLevel(level)}
@@ -72,7 +70,7 @@ function _HanziDetails({ definition, lessons }: HanziApiResponse) {
                     "rounded-md px-4 text-sm py-0.5 border",
                     currentLevel === level ? "bg-white text-black border-white" : "border-softzinc"
                   )}
-                  key={index}
+                  key={level}
                 >
                   {level}
                 </button>

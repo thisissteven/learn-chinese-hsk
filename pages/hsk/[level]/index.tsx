@@ -10,7 +10,8 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { useLastLevelActions } from "@/store/useLastLevel";
 import { MobileSidebar } from "@/modules/Layout/Sidebar";
 import { HanziModal } from "@/modules/Character";
-import { VirtualizedList } from "@/components/VirtualizedList";
+import { HanziModalDesktop } from "@/modules/Character/HanziModalDesktop";
+import { useWindowSize } from "@/hooks";
 
 async function getCharactersOnLevel(level: string | number) {
   const file = await fs.readFile(process.cwd() + getFilePath(level), "utf8");
@@ -130,15 +131,19 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
     }
   }, [hydrateCompletedCharacters, hydrateSettings]);
 
+  const { width } = useWindowSize();
+
   return (
     <>
       <Head>
         <title>{title}</title>
       </Head>
-      <HanziModal />
+
+      {width > 640 ? <HanziModalDesktop /> : <HanziModal />}
+
       <div className="relative h-dvh w-full">
-        <div ref={ref} className="w-full h-full sm:overflow-y-auto">
-          <div className="max-sm:hidden px-4 sm:pr-8 py-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+        <div ref={ref} className="w-full h-full overflow-y-auto scrollbar max-sm:pb-12">
+          <div className="px-4 sm:pr-8 py-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
             {characters.map((character) => {
               const isCompleted = currentCompletedCharacters.includes(character.id);
               return (
@@ -166,46 +171,6 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
               );
             })}
           </div>
-          <VirtualizedList data={characters}>
-            {(items, virtualizer) => {
-              if (!characters) return null;
-
-              return (
-                <div className="relative px-4 grid py-8 w-full gap-4 sm:hidden">
-                  {items.map((item) => {
-                    const character = characters[item.index];
-                    const isCompleted = currentCompletedCharacters.includes(character.id);
-
-                    return (
-                      <VirtualizedList.Item key={character.id} virtualizer={virtualizer} item={item}>
-                        <CharacterCard
-                          hanziHref={`/hsk/${props.currentLevel}/?hanzi=${character.hanzi}&page=${currentPage}`}
-                          isFlipped={flippedCard === character.id}
-                          isCompleted={currentCompletedCharacters.includes(character.id)}
-                          onCompleteToggle={() => {
-                            if (isCompleted) {
-                              removeCompletedCharacters(props.currentLevel, character.id);
-                            } else {
-                              addCompletedCharacters(props.currentLevel, character.id);
-                            }
-                          }}
-                          onFlip={() => {
-                            if (flippedCard === character.id) {
-                              setFlippedCard(null);
-                              return;
-                            }
-                            setFlippedCard(character.id);
-                          }}
-                          key={character.id}
-                          {...character}
-                        />
-                      </VirtualizedList.Item>
-                    );
-                  })}
-                </div>
-              );
-            }}
-          </VirtualizedList>
         </div>
         <div className="fixed w-full left-0 max-w-[1440px] mx-auto px-2 md:right-4 md:px-4 bottom-2 flex justify-end mt-8 gap-2">
           <MobileSidebar />

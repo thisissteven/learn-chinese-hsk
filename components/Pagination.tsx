@@ -20,11 +20,17 @@ export default function Pagination({
 }: PaginationProps) {
   return (
     <div className="max-sm:w-full flex justify-center items-center gap-2">
-      <LinkButton shallow={currentPage !== 1} href={previousHref} disabled={currentPage === 1 && !canPreviousLevel}>
+      <LinkButton
+        prefetch={false}
+        shallow={currentPage !== 1}
+        href={previousHref}
+        disabled={currentPage === 1 && !canPreviousLevel}
+      >
         &#x2190;
       </LinkButton>
 
       <LinkButton
+        prefetch={false}
         shallow={currentPage !== totalPages}
         href={nextHref}
         disabled={currentPage === totalPages && !canNextLevel}
