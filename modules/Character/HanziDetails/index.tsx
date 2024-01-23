@@ -4,7 +4,9 @@ import { BASE_URL } from "@/pages/_app";
 import { AudioButton } from "../AudioButton";
 import clsx from "clsx";
 
-export function HanziDetails({ definition, lessons }: HanziApiResponse) {
+export const HanziDetails = React.memo(_HanziDetails);
+
+function _HanziDetails({ definition, lessons }: HanziApiResponse) {
   const [currentTab, setCurrentTab] = React.useState<"definition" | "related" | "idioms" | "lessons">("definition");
   const [entryIndex, setEntryIndex] = React.useState(0);
   const [currentLevel, setCurrentLevel] = React.useState<string | null>(null);
@@ -14,6 +16,8 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
       setCurrentLevel(lessons[0].lessonInfo.level.toLowerCase());
     }
   }, [lessons]);
+
+  if (definition === null) return <div className="grid place-items-center h-full">Not found</div>;
 
   const currentEntry = definition.entries[entryIndex];
   const entryLength = definition.entries.length;
@@ -31,7 +35,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
     <div className="overflow-y-auto flex-1 scrollbar-none py-4">
       <div className="space-y-2">
         <div className="flex items-end gap-2">
-          <p className="text-6xl">{definition.simplified}</p>
+          <p className="text-6xl font-chinese">{definition.simplified}</p>
           <div>
             <AudioButton key={audioUrl} url={audioUrl} />
             <p className="font-medium">{currentEntry.pinyin}</p>
@@ -80,7 +84,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
           {currentLesson.map((lesson, index) => {
             return (
               <li key={index} className="list-none">
-                <div>
+                <div className="font-chinese">
                   {lesson.simplified}
                   <AudioButton size="small" key={lesson.audioUrl} url={lesson.audioUrl} />
                 </div>

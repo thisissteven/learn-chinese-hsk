@@ -51,7 +51,7 @@ export function HanziModal() {
   );
 
   const completedCharacters = useCompletedCharacters();
-  const currentCompletedCharacters = data && !isLoading ? completedCharacters[data.definition.hsk] : null;
+  const currentCompletedCharacters = data?.definition && !isLoading ? completedCharacters[data.definition.hsk] : null;
   const isCompleted = currentCompletedCharacters && currentCompletedCharacters.includes(parseInt(currentHanziId));
 
   const { addCompletedCharacters, removeCompletedCharacters } = useCompletedCharactersActions();

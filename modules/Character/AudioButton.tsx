@@ -9,6 +9,12 @@ export function AudioButton({ url, size = "normal" }: { url: string; size?: "sma
 
   const { playAudio, stopAudio } = useAudio();
 
+  React.useEffect(() => {
+    return () => {
+      stopAudio();
+    };
+  }, [stopAudio]);
+
   return (
     <button
       onClick={async () => {
@@ -39,7 +45,7 @@ export function AudioButton({ url, size = "normal" }: { url: string; size?: "sma
       }}
       className={clsx(
         "text-sky-500 active:opacity-100 transition",
-        size === "small" && "inline align-middle ml-1",
+        size === "small" && "inline align-middle",
         isLoading ? "opacity-100" : "opacity-50"
       )}
     >
