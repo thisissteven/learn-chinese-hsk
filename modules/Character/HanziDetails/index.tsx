@@ -19,7 +19,9 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
 
   if (definition === null) return <div className="grid place-items-center h-full">Not found</div>;
 
-  const currentEntry = definition.entries[entryIndex];
+  const actualEntryIndex = Math.min(entryIndex, definition.entries.length - 1);
+
+  const currentEntry = definition.entries[actualEntryIndex];
   const entryLength = definition.entries.length;
 
   const lessonLevelSet = new Set(lessons.map((lesson) => lesson.lessonInfo.level.toLowerCase()));
