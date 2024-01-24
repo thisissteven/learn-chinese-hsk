@@ -11,6 +11,14 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
   const [entryIndex, setEntryIndex] = React.useState(0);
   const [currentLevel, setCurrentLevel] = React.useState<string | null>(null);
 
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [definition.simplified]);
+
   React.useEffect(() => {
     if (lessons.length > 0) {
       setCurrentLevel(lessons[0].lessonInfo.level.toLowerCase());
@@ -34,7 +42,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
   const audioUrl = BASE_URL + `/api/audio/${encodeURI(hanzi)}?pinyin=${pinyin}`;
 
   return (
-    <div className="overflow-y-auto flex-1 scrollbar-none py-4">
+    <div ref={ref} className="overflow-y-auto flex-1 scrollbar-none py-4">
       {definition.hsk && <span className="px-4 text-sm">HSK {definition.hsk}</span>}
       <div className="space-y-2">
         <div className="flex items-end gap-2 px-4">
@@ -66,7 +74,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
         <HanziDefinition entry={currentEntry} />
 
         {lessonLevels.length > 1 && (
-          <DragToScrollWrapper>
+          <DragToScrollWrapper key={definition.simplified}>
             {lessonLevels.map((level) => {
               return (
                 <button
