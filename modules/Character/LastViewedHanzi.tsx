@@ -20,7 +20,7 @@ export function LastViewedHanzi() {
   React.useEffect(() => {
     if (isInteracted.current) toast.dismiss();
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       if (lastViewedHanzi && !isInteracted.current) {
         isInteracted.current = true;
         if (!router.query.hanzi) {
@@ -56,6 +56,10 @@ export function LastViewedHanzi() {
         }
       }
     }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [lastViewedHanzi, router]);
 
   return <Toaster position="top-center" />;

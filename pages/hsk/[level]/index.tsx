@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import { CHARACTERS_PER_PAGE, ChineseCharacter, HSK_LEVELS, Level } from "@/data";
 import Pagination from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import * as React from "react";
 import Head from "next/head";
 import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
@@ -11,6 +12,7 @@ import { MobileSidebar } from "@/modules/Layout/Sidebar";
 import { HanziModal } from "@/modules/Character";
 import { HanziModalDesktop } from "@/modules/Character/HanziModalDesktop";
 import { useWindowSize } from "@/hooks";
+import { CharacterRow } from "@/components/CharacterRow";
 
 async function getCharactersOnLevel(level: string | number) {
   const file = await fs.readFile(process.cwd() + getFilePath(level), "utf8");
@@ -126,6 +128,8 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
 
   const { width } = useWindowSize();
 
+  const router = useRouter();
+
   return (
     <>
       <Head>
@@ -139,10 +143,40 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
           <div className="px-4 sm:pr-8 py-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
             {characters.map((character) => {
               const isCompleted = currentCompletedCharacters.includes(character.id);
+
+              if (width > 640) {
+                return (
+                  <CharacterCard
+                    hanziHref={`/hsk/${props.currentLevel}/?hanzi=${character.hanzi}&page=${currentPage}`}
+                    isFlipped={flippedCard === character.id}
+                    isCompleted={currentCompletedCharacters.includes(character.id)}
+                    onCompleteToggle={() => {
+                      if (isCompleted) {
+                        removeCompletedCharacters(props.currentLevel, character.id);
+                      } else {
+                        addCompletedCharacters(props.currentLevel, character.id);
+                      }
+                    }}
+                    onFlip={() => {
+                      if (flippedCard === character.id) {
+                        setFlippedCard(null);
+                        return;
+                      }
+                      setFlippedCard(character.id);
+                    }}
+                    key={character.id}
+                    {...character}
+                  />
+                );
+              }
+
               return (
-                <CharacterCard
-                  hanziHref={`/hsk/${props.currentLevel}/?hanzi=${character.hanzi}&page=${currentPage}`}
-                  isFlipped={flippedCard === character.id}
+                <CharacterRow
+                  onClick={() =>
+                    router.push(`/hsk/${props.currentLevel}/?hanzi=${character.hanzi}&page=${currentPage}`, undefined, {
+                      shallow: true,
+                    })
+                  }
                   isCompleted={currentCompletedCharacters.includes(character.id)}
                   onCompleteToggle={() => {
                     if (isCompleted) {
@@ -150,13 +184,6 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
                     } else {
                       addCompletedCharacters(props.currentLevel, character.id);
                     }
-                  }}
-                  onFlip={() => {
-                    if (flippedCard === character.id) {
-                      setFlippedCard(null);
-                      return;
-                    }
-                    setFlippedCard(character.id);
                   }}
                   key={character.id}
                   {...character}

@@ -53,7 +53,8 @@ export function HanziModal() {
 
   return (
     <Drawer
-      preventScrollRestoration={false}
+      snapPoints={[0.8, 1]}
+      fadeFromIndex={0}
       open={Boolean(hanzi)}
       onOpenChange={(open) => {
         if (!open) {
@@ -62,10 +63,10 @@ export function HanziModal() {
         }
       }}
     >
-      <Drawer.Content className="h-[100dvh] px-0 pt-4 pb-[72px] flex flex-col">
+      <Drawer.Content className="h-dvh px-0 pt-4 pb-[72px] flex flex-col">
         <Drawer.MobilePan />
 
-        {data && <HanziDetails {...data} />}
+        {data && <HanziDetails key={hanzi} {...data} />}
 
         <div className="absolute top-8 md:top-4 left-0 right-0 mx-4 bg-gradient-to-b from-black h-6"></div>
         <div className="absolute bottom-14 md:bottom-12 left-0 right-0 mx-4 bg-gradient-to-t from-black h-12"></div>

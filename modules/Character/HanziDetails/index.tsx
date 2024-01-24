@@ -13,7 +13,6 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
 
   React.useEffect(() => {
     if (lessons.length > 0) {
-      setEntryIndex(0);
       setCurrentLevel(lessons[0].lessonInfo.level.toLowerCase());
     }
   }, [lessons]);
@@ -34,6 +33,7 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
 
   return (
     <div className="overflow-y-auto flex-1 scrollbar-none py-4">
+      {definition.hsk && <span className="px-4 text-sm">HSK {definition.hsk}</span>}
       <div className="space-y-2">
         <div className="flex items-end gap-2 px-4">
           <p className="text-6xl font-chinese">{definition.simplified}</p>
