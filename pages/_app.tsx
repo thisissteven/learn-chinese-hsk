@@ -1,3 +1,4 @@
+import { LastViewedHanzi } from "@/modules/Character";
 import { Layout } from "@/modules/Layout";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -27,6 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
           --font-chinese: ${notoSans.style.fontFamily};
         }
       `}</style>
+      <LastViewedHanzi />
       <AudioProvider>
         <Layout>
           <Component {...pageProps} />

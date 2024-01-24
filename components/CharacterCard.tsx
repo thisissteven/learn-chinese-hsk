@@ -62,7 +62,11 @@ export function CharacterCard({
           >
             {hanzi}
 
-            <MarkAsCompleted isCompleted={isCompleted} onClick={onCompleteToggle} />
+            <MarkAsCompleted
+              className={isCompleted ? "bg-transparent" : ""}
+              isCompleted={isCompleted}
+              onClick={onCompleteToggle}
+            />
 
             <div
               className={clsx(
@@ -126,8 +130,8 @@ export function MarkAsCompleted({
     <div
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        "absolute right-4 bottom-4 w-8 h-8 grid place-items-center transition active:scale-95 hover:opacity-100 rounded-md text-sm",
-        !isCompleted && "active:bg-mossgreen/10",
+        "absolute right-4 bottom-4 w-8 h-8 grid place-items-center transition active:scale-95 hover:opacity-100 rounded-md text-sm active:bg-mossgreen/10",
+        isCompleted && "bg-mossgreen/10",
         className
       )}
     >

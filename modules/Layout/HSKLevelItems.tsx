@@ -3,12 +3,14 @@ import { useCompletedCharacters } from "@/store";
 import { SidebarItem } from "./Sidebar";
 import clsx from "clsx";
 import ProgressBar from "@/components/ProgressBar";
-import { useLastLevel } from "@/store/useLastLevel";
 import { ResetButton } from "@/components/ResetButton";
+import { useParams } from "next/navigation";
 
-export function HSKLevelItems() {
-  const lastLevel = useLastLevel();
+export function HSKLevelItems({ isDrawer = false }: { isDrawer?: boolean }) {
   const completedCharacters = useCompletedCharacters();
+
+  const params = useParams();
+  const currentLevel = params?.level as unknown as Level;
 
   return HSK_LEVELS.map((level) => {
     const progress = completedCharacters[level].length / CHARACTERS_PER_LEVEL[level];
@@ -17,9 +19,10 @@ export function HSKLevelItems() {
     return (
       <HSKLevelItem
         key={level}
+        isDrawer={isDrawer}
         completedCount={completedCount}
         progress={progress}
-        isActive={lastLevel === level}
+        isActive={currentLevel == level}
         level={level}
       />
     );
@@ -31,16 +34,19 @@ function HSKLevelItem({
   completedCount,
   progress,
   isActive,
+  isDrawer = false,
 }: {
   level: Level;
   completedCount: number;
   progress: number;
   isActive: boolean;
+  isDrawer?: boolean;
 }) {
   const totalCharacters = CHARACTERS_PER_LEVEL[level];
 
   return (
     <SidebarItem
+      isDrawer={isDrawer}
       rightItem={<ResetButton disabled={progress === 0} level={level} />}
       key={level}
       isActive={isActive}

@@ -7,7 +7,6 @@ import * as React from "react";
 import Head from "next/head";
 import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
 import { CharacterCard } from "@/components/CharacterCard";
-import { useLastLevelActions } from "@/store/useLastLevel";
 import { MobileSidebar } from "@/modules/Layout/Sidebar";
 import { HanziModal } from "@/modules/Character";
 import { HanziModalDesktop } from "@/modules/Character/HanziModalDesktop";
@@ -111,12 +110,6 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
   }, [currentPage, currentLevel]);
 
   const title = `HSK ${props.currentLevel} Page ${currentPage}`;
-
-  const { updateLastLevel } = useLastLevelActions();
-
-  React.useEffect(() => {
-    updateLastLevel(props.currentLevel);
-  }, [props.currentLevel, updateLastLevel]);
 
   const { addCompletedCharacters, removeCompletedCharacters, hydrateSettings, hydrateCompletedCharacters } =
     useCompletedCharactersActions();

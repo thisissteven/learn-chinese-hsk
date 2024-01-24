@@ -17,7 +17,8 @@ export function AudioButton({ url, size = "normal" }: { url: string; size?: "sma
 
   return (
     <button
-      onClick={async () => {
+      onClick={async (e) => {
+        e.stopPropagation();
         if (isLoading) {
           stopAudio();
           setIsLoading(false);

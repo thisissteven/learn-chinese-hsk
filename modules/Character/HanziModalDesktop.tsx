@@ -11,12 +11,19 @@ import { BASE_URL, useAudio } from "@/pages/_app";
 import { HanziApiResponse } from "./types";
 import { HanziDetails } from "./HanziDetails";
 import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
+import { LAST_VIEWED_HANZI_KEY } from "@/store/useLastViewedHanzi";
 
 export type IdHanziMapKey = keyof typeof IdHanziMap;
 
 export function HanziModalDesktop() {
   const router = useRouter();
   const hanzi = router.query.hanzi as IdHanziMapKey;
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && hanzi) {
+      localStorage.setItem(LAST_VIEWED_HANZI_KEY, hanzi);
+    }
+  }, [hanzi]);
 
   const currentHanziId = IdHanziMap[hanzi];
   const previousHanziId = (parseInt(currentHanziId) - 1).toString() as IdHanziMapKey;
@@ -65,7 +72,7 @@ export function HanziModalDesktop() {
         },
       }}
     >
-      <SharedDialog.Content className="h-full px-4 pt-4 flex flex-col pb-[72px]">
+      <SharedDialog.Content className="h-full px-0 pt-4 flex flex-col pb-[72px]">
         <SharedDialog.MobilePan />
 
         {data && <HanziDetails {...data} />}
