@@ -59,9 +59,7 @@ export function MobileSidebar() {
           </button>
         </Drawer.Trigger>
 
-        <Drawer.Content>
-          <Drawer.MobilePan />
-
+        <Drawer.Content className="w-full">
           <aside className="relative h-fit">
             <ul className="space-y-2">
               <HSKLevelItems isDrawer />
