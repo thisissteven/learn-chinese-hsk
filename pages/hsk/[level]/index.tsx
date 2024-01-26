@@ -10,7 +10,6 @@ import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
 import { CharacterCard } from "@/components/CharacterCard";
 import { MobileSidebar } from "@/modules/Layout/Sidebar";
 import { HanziModal } from "@/modules/Character";
-import { HanziModalDesktop } from "@/modules/Character/HanziModalDesktop";
 import { useWindowSize } from "@/hooks";
 import { CharacterRow } from "@/components/CharacterRow";
 
@@ -136,7 +135,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
         <title>{title}</title>
       </Head>
 
-      {width > 640 ? <HanziModalDesktop /> : <HanziModal />}
+      <HanziModal />
 
       <div className="relative h-dvh w-full">
         <div ref={ref} className="w-full h-full overflow-y-auto scrollbar max-sm:pb-12">

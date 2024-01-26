@@ -3,13 +3,13 @@ import { HanziApiResponse } from "../types";
 import { BASE_URL } from "@/pages/_app";
 import { AudioButton } from "../AudioButton";
 import clsx from "clsx";
-import { Popover } from "@/components/Popover";
-import DragToScrollWrapper from "@/components/DragToScrollWrapper";
+import { ExampleSentences } from "./ExampleSentences";
+import { HanziDefinition } from "./HanziDefinition";
+import { ExampleIdioms } from "./ExampleIdioms";
+import { RelatedHanzi } from "./RelatedHanzi";
 
-export function HanziDetails({ definition, lessons }: HanziApiResponse) {
-  // const [currentTab, setCurrentTab] = React.useState<"definition" | "related" | "idioms" | "lessons">("definition");
+export function HanziDetails({ definition, lessons, idioms, related }: HanziApiResponse) {
   const [entryIndex, setEntryIndex] = React.useState(0);
-  const [currentLevel, setCurrentLevel] = React.useState<string | null>(null);
 
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -19,23 +19,12 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
     }
   }, [definition.simplified]);
 
-  React.useEffect(() => {
-    if (lessons.length > 0) {
-      setCurrentLevel(lessons[0].lessonInfo.level.toLowerCase());
-    }
-  }, [lessons]);
-
   if (definition === null) return <div className="grid place-items-center h-full">Not found</div>;
 
   const actualEntryIndex = Math.min(entryIndex, definition.entries.length - 1);
 
   const currentEntry = definition.entries[actualEntryIndex];
   const entryLength = definition.entries.length;
-
-  const lessonLevelSet = new Set(lessons.map((lesson) => lesson.lessonInfo.level.toLowerCase()));
-  const lessonLevels = Array.from(lessonLevelSet);
-
-  const currentLesson = lessons.filter((lesson) => lesson.lessonInfo.level.toLowerCase() === currentLevel);
 
   const hanzi = definition.simplified;
   const pinyin = currentEntry.pinyin;
@@ -73,62 +62,12 @@ export function HanziDetails({ definition, lessons }: HanziApiResponse) {
 
         <HanziDefinition entry={currentEntry} />
 
-        {lessonLevels.length > 1 && (
-          <DragToScrollWrapper key={definition.simplified}>
-            {lessonLevels.map((level) => {
-              return (
-                <button
-                  onClick={() => setCurrentLevel(level)}
-                  className={clsx(
-                    "rounded-md px-4 text-sm py-0.5 border",
-                    currentLevel === level ? "bg-white text-black border-white" : "border-softzinc"
-                  )}
-                  key={level}
-                >
-                  {level}
-                </button>
-              );
-            })}
-          </DragToScrollWrapper>
-        )}
-        <ul className="relative space-y-2 px-4">
-          {currentLesson.map((lesson, index) => {
-            return (
-              <li key={index} className="list-none">
-                <div className="font-chinese">
-                  <Popover>
-                    <Popover.Trigger className="text-left">
-                      {lesson.simplified}
-                      <AudioButton size="small" key={lesson.audioUrl} url={lesson.audioUrl} />
-                    </Popover.Trigger>
-                    <Popover.Content
-                      align="start"
-                      className="text-xs leading-5 font-chinese text-white px-2 max-w-[calc(100vw-1rem)] md:max-w-[calc(540px-1rem)]"
-                    >
-                      <p>{lesson.pinyin}</p>
-                    </Popover.Content>
-                  </Popover>
-                </div>
-                <p className="text-sm text-gray">{lesson.english}</p>
-              </li>
-            );
-          })}
-        </ul>
+        <RelatedHanzi hanzi={hanzi} related={related} />
+
+        <ExampleIdioms hanzi={definition.simplified} idioms={idioms} />
+
+        <ExampleSentences hanzi={definition.simplified} lessons={lessons} />
       </div>
     </div>
-  );
-}
-
-function HanziDefinition({ entry }: { entry: HanziApiResponse["definition"]["entries"][number] }) {
-  return (
-    <ul className="relative ml-8">
-      {entry.definitions.map((definition, index) => {
-        return (
-          <li key={index} className="list-disc">
-            {definition}
-          </li>
-        );
-      })}
-    </ul>
   );
 }

@@ -11,12 +11,16 @@ import { HanziDetails } from "./HanziDetails";
 import { useCompletedCharacters, useCompletedCharactersActions } from "@/store";
 import { Drawer } from "@/components/Drawer";
 import { LAST_VIEWED_HANZI_KEY } from "@/store/useLastViewedHanzi";
+import { useWindowSize } from "@/hooks";
+import clsx from "clsx";
 
 export type IdHanziMapKey = keyof typeof IdHanziMap;
 
 export function HanziModal() {
   const router = useRouter();
   const hanzi = router.query.hanzi as IdHanziMapKey;
+
+  const { width } = useWindowSize();
 
   React.useEffect(() => {
     if (typeof window !== "undefined" && hanzi) {
@@ -51,8 +55,11 @@ export function HanziModal() {
 
   const { addCompletedCharacters, removeCompletedCharacters } = useCompletedCharactersActions();
 
+  const isMobile = width < 640;
+
   return (
     <Drawer
+      direction={isMobile ? "bottom" : "right"}
       open={Boolean(hanzi)}
       onOpenChange={(open) => {
         if (!open) {
@@ -61,13 +68,16 @@ export function HanziModal() {
         }
       }}
     >
-      <Drawer.Content className="h-[90dvh] px-0 pt-4 pb-[72px] flex flex-col">
-        <Drawer.MobilePan />
-
+      <Drawer.Content
+        className={clsx(
+          "px-0 pt-4 pb-[72px] flex flex-col",
+          isMobile ? "h-[90dvh] left-0" : "h-dvh rounded-none max-w-xl w-full"
+        )}
+      >
         {data && <HanziDetails {...data} />}
 
-        <div className="absolute top-8 md:top-4 left-0 right-0 mx-4 bg-gradient-to-b from-black h-6"></div>
-        <div className="absolute bottom-14 md:bottom-12 left-0 right-0 mx-4 bg-gradient-to-t from-black h-12"></div>
+        <div className="absolute top-8 sm:top-4 left-0 right-0 mx-4 bg-gradient-to-b from-black h-6"></div>
+        <div className="absolute bottom-14 sm:bottom-12 left-0 right-0 mx-4 bg-gradient-to-t from-black h-12"></div>
 
         {isLoading && (
           <div className="grid place-items-center absolute inset-0 bg-black/50 mb-8">
@@ -76,7 +86,7 @@ export function HanziModal() {
         )}
 
         <MarkAsCompleted
-          className="absolute top-12 md:top-9 right-4 md:right-8 w-12 h-12"
+          className="absolute top-12 sm:top-9 right-4 sm:right-8 w-12 h-12"
           checkmarkClassName="w-8 h-8"
           isCompleted={Boolean(isCompleted)}
           onClick={() => {
@@ -89,7 +99,7 @@ export function HanziModal() {
           }}
         />
 
-        <div className="absolute flex gap-2 bottom-0 left-0 right-0 px-3 pb-3 md:px-4 md:pb-4">
+        <div className="absolute flex gap-2 bottom-0 left-0 right-0 px-3 pb-3 sm:px-4 sm:pb-4">
           <LinkButton
             prefetch={false}
             onMouseEnter={() => {

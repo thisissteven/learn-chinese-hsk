@@ -4,7 +4,12 @@ import React from "react";
 export default function DragToScrollWrapper({ children }: { children: React.ReactNode }) {
   const { ref, ...rest } = useDragToScroll();
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onPointerMove={(e) => {
+        e.stopPropagation();
+      }}
+    >
       <div ref={ref} {...rest} className="mt-4 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-fit px-4 whitespace-nowrap">{children}</div>
       </div>

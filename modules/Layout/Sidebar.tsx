@@ -33,7 +33,7 @@ export function DesktopSidebar() {
   if (!showSidebar) return null;
 
   return (
-    <aside className="pl-4 pt-4 max-md:hidden sticky top-4 h-fit min-w-64">
+    <aside className="pl-4 pt-8 max-md:hidden sticky top-0 h-fit min-w-64">
       <ul className="space-y-1">
         <HSKLevelItems />
       </ul>

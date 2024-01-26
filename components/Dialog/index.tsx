@@ -112,5 +112,3 @@ Dialog.Close = RadixDialog.Close;
 Dialog.MobilePan = function MobilePan() {
   return <div className="md:hidden mx-auto rounded-full h-1 w-8 bg-softzinc mb-3"></div>;
 };
-
-export * from "./SharedDialog";
