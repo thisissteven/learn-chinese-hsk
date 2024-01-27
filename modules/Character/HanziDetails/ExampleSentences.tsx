@@ -18,6 +18,7 @@ export function ExampleSentences({ hanzi, lessons }: { hanzi: string; lessons: H
   const lessonLevels = Array.from(lessonLevelSet);
 
   const currentLesson = lessons.filter((lesson) => lesson.lessonInfo.level.toLowerCase() === currentLevel);
+
   const regex = new RegExp(`(${hanzi})`);
 
   return (
@@ -43,11 +44,11 @@ export function ExampleSentences({ hanzi, lessons }: { hanzi: string; lessons: H
         </DragToScrollWrapper>
       )}
       <ul className="relative space-y-2 px-4">
-        {currentLesson.map((lesson, index) => {
+        {currentLesson.map((lesson) => {
           const splitted = lesson.simplified.split(regex);
 
           return (
-            <li key={index} className="list-none">
+            <li key={lesson.simplified} className="list-none">
               <div className="font-chinese">
                 <Popover>
                   <Popover.Trigger className="text-left sm:text-lg">
